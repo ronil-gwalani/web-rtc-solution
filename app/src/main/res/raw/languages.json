@@ -1,0 +1,18 @@
+[
+  {
+    "value": "English",
+    "code": "en-US"
+  },
+  {
+    "code": "en-GB",
+    "value": "English (UK)"
+  },
+  {
+    "value": "हिंदी",
+    "code": "hi-IN"
+  },
+  {
+    "value": "كٲشُر",
+    "code": "ks-IN"
+  }
+]

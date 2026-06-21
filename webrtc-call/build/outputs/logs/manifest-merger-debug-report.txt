@@ -1,16 +1,20 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml:2:13-83
-INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml:2:13-83
+ADDED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:2:1-4:12
+INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:2:1-4:12
 	package
-		INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml
+		INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml:2:23-81
+		ADDED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.WAKE_LOCK
+ADDED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:5-68
+	android:name
+		ADDED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:22-65
 uses-sdk
-INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml reason: use-sdk injection requested
-INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml
-INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml
+INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml
+INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml
+		INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /Users/ronilgwalani/Projects/WebRTCsolution/webrtc-call/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest15734871544316060527.xml
+		INJECTED from /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml

@@ -1,51 +1,59 @@
 package org.ron.webrtccall
 
 import android.app.Application
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 import org.webrtc.EglBase
-import java.util.*
 
 class CallViewModel(application: Application) : AndroidViewModel(application) {
 
     private var sessionManager: WebRtcSessionManager? = null
     private var signaling: WebRtcSignaling? = null
     private var isEndingCall = false
-    private var timer: Timer? = null
+    private var timerJob: Job? = null
+    private val proximityManager = ProximityManager(application)
 
-    private val _localTrack = mutableStateOf<VideoTrack?>(null)
-    val localTrack: State<VideoTrack?> = _localTrack
+    private val _localTrack = MutableStateFlow<VideoTrack?>(null)
+    val localTrack: StateFlow<VideoTrack?> = _localTrack.asStateFlow()
 
-    private val _remoteTrack = mutableStateOf<VideoTrack?>(null)
-    val remoteTrack: State<VideoTrack?> = _remoteTrack
+    private val _remoteTrack = MutableStateFlow<VideoTrack?>(null)
+    val remoteTrack: StateFlow<VideoTrack?> = _remoteTrack.asStateFlow()
 
-    private val _eglContext = mutableStateOf<EglBase.Context?>(null)
-    val eglContext: State<EglBase.Context?> = _eglContext
+    private val _eglContext = MutableStateFlow<EglBase.Context?>(null)
+    val eglContext: StateFlow<EglBase.Context?> = _eglContext.asStateFlow()
 
-    private val _isMuted = mutableStateOf(false)
-    val isMuted: State<Boolean> = _isMuted
+    private val _isMuted = MutableStateFlow(false)
+    val isMuted: StateFlow<Boolean> = _isMuted.asStateFlow()
 
-    private val _isSpeakerOn = mutableStateOf(false)
-    val isSpeakerOn: State<Boolean> = _isSpeakerOn
+    private val _isSpeakerOn = MutableStateFlow(false)
+    val isSpeakerOn: StateFlow<Boolean> = _isSpeakerOn.asStateFlow()
 
-    private val _isVideoEnabled = mutableStateOf(true)
-    val isVideoEnabled: State<Boolean> = _isVideoEnabled
+    private val _isVideoEnabled = MutableStateFlow(true)
+    val isVideoEnabled: StateFlow<Boolean> = _isVideoEnabled.asStateFlow()
 
-    private val _isCalling = mutableStateOf(false)
-    val isCalling: State<Boolean> = _isCalling
+    private val _isCalling = MutableStateFlow(false)
+    val isCalling: StateFlow<Boolean> = _isCalling.asStateFlow()
 
-    private val _isAudioOnly = mutableStateOf(false)
-    val isAudioOnly: State<Boolean> = _isAudioOnly
+    private val _isAudioOnly = MutableStateFlow(false)
+    val isAudioOnly: StateFlow<Boolean> = _isAudioOnly.asStateFlow()
 
-    private val _callDuration = mutableStateOf("Connecting...")
-    val callDuration: State<String> = _callDuration
+    private val _callDuration = MutableStateFlow("Connecting...")
+    val callDuration: StateFlow<String> = _callDuration.asStateFlow()
+
+    private var currentRoomId: String? = null
 
     fun initCall(roomId: String, isCaller: Boolean, isAudioOnly: Boolean) {
-        if (_isCalling.value) return
+        if (_isCalling.value && currentRoomId == roomId) return
+        
         isEndingCall = false
+        _isCalling.value = true
         _callDuration.value = "Connecting..."
+        currentRoomId = roomId
         
         signaling = FirebaseSignaling(roomId)
         
@@ -54,7 +62,6 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
             _isVideoEnabled.value = !isAudioOnly
             _isSpeakerOn.value = !isAudioOnly
             
-            // Clean up old session data
             signaling?.destroy()
             signaling = FirebaseSignaling(roomId)
             
@@ -73,9 +80,7 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
         val signalingClient = signaling ?: return
         
         signalingClient.observeDisconnect {
-            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                if (!isEndingCall) endCall()
-            }
+            if (!isEndingCall) endCall()
         }
 
         sessionManager = WebRtcSessionManager(
@@ -91,14 +96,12 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
                 startTimer()
             },
             onConnectionClosed = { 
-                android.os.Handler(android.os.Looper.getMainLooper()).post {
-                    if (!isEndingCall) endCall()
-                }
+                if (!isEndingCall) endCall()
             }
         )
         
         _eglContext.value = sessionManager?.eglContext
-        _isCalling.value = true
+        updateProximitySensor()
 
         if (isCaller) {
             sessionManager?.startCall(isVideo)
@@ -108,22 +111,22 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun startTimer() {
-        if (timer != null) return
-        var seconds = 0
-        timer = Timer()
-        timer?.schedule(object : TimerTask() {
-            override fun run() {
-                seconds++
+        if (timerJob != null) return
+        timerJob = viewModelScope.launch {
+            var seconds = 0
+            while (true) {
                 val minutes = seconds / 60
                 val remainingSeconds = seconds % 60
                 _callDuration.value = String.format("%02d:%02d", minutes, remainingSeconds)
+                delay(1000)
+                seconds++
             }
-        }, 0, 1000)
+        }
     }
 
     private fun stopTimer() {
-        timer?.cancel()
-        timer = null
+        timerJob?.cancel()
+        timerJob = null
     }
 
     fun toggleMic() {
@@ -134,15 +137,25 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
     fun toggleSpeaker() {
         _isSpeakerOn.value = !_isSpeakerOn.value
         sessionManager?.setSpeaker(_isSpeakerOn.value)
+        updateProximitySensor()
     }
 
     fun toggleVideo() {
         _isVideoEnabled.value = !_isVideoEnabled.value
         sessionManager?.toggleVideo(_isVideoEnabled.value)
+        updateProximitySensor()
     }
 
     fun switchCamera() {
         sessionManager?.switchCamera()
+    }
+
+    private fun updateProximitySensor() {
+        if (_isCalling.value && (_isAudioOnly.value || !_isSpeakerOn.value)) {
+            proximityManager.activate()
+        } else {
+            proximityManager.deactivate()
+        }
     }
 
     fun endCall() {
@@ -150,18 +163,16 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
         isEndingCall = true
         
         stopTimer()
+        proximityManager.deactivate()
         
-        // 1. Stop data flow immediately to prevent crashes and frozen frames
         sessionManager?.stopMedia()
-        
-        // 2. Signal disconnection to peer
         signaling?.markDisconnected()
         
-        // 3. Close the UI screen
         _isCalling.value = false
+        currentRoomId = null
         
-        // 4. Detailed cleanup after the UI has had time to release views
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+        viewModelScope.launch {
+            delay(1000)
             sessionManager?.dispose()
             sessionManager = null
             
@@ -171,7 +182,7 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
             
             signaling?.destroy()
             signaling = null
-        }, 1000)
+        }
     }
 
     override fun onCleared() {

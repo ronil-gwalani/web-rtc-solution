@@ -20,14 +20,19 @@ class WebRtcSessionManager(
     private val rootEglBase = EglBase.create()
     val eglContext: EglBase.Context get() = rootEglBase.eglBaseContext
 
-    private val peerConnectionFactory: PeerConnectionFactory by lazy {
-        val videoEncoderFactory = DefaultVideoEncoderFactory(eglContext, true, true)
-        val videoDecoderFactory = DefaultVideoDecoderFactory(eglContext)
-        PeerConnectionFactory.builder()
-            .setVideoEncoderFactory(videoEncoderFactory)
-            .setVideoDecoderFactory(videoDecoderFactory)
-            .createPeerConnectionFactory()
-    }
+    private var _peerConnectionFactory: PeerConnectionFactory? = null
+    private val peerConnectionFactory: PeerConnectionFactory
+        get() {
+            if (_peerConnectionFactory == null) {
+                val videoEncoderFactory = DefaultVideoEncoderFactory(eglContext, true, true)
+                val videoDecoderFactory = DefaultVideoDecoderFactory(eglContext)
+                _peerConnectionFactory = PeerConnectionFactory.builder()
+                    .setVideoEncoderFactory(videoEncoderFactory)
+                    .setVideoDecoderFactory(videoDecoderFactory)
+                    .createPeerConnectionFactory()
+            }
+            return _peerConnectionFactory!!
+        }
 
     private var peerConnection: PeerConnection? = null
     private var videoCapturer: CameraVideoCapturer? = null
@@ -36,8 +41,8 @@ class WebRtcSessionManager(
     private var localAudioTrack: AudioTrack? = null
     
     private var isCaller = false
-    private var isFrontCamera = true
     private var isDisposed = false
+    private var hasRemoteDescriptionSet = false
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     init {
@@ -52,7 +57,7 @@ class WebRtcSessionManager(
         initSession(isVideo)
         
         val constraints = MediaConstraints().apply {
-            mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", if (isVideo) "true" else "false"))
+            mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
             mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"))
         }
 
@@ -67,7 +72,10 @@ class WebRtcSessionManager(
         }, constraints)
 
         signaling.observeAnswer { sdp ->
-            peerConnection?.setRemoteDescription(SimpleSdpObserver(), sdp)
+            if (!hasRemoteDescriptionSet) {
+                hasRemoteDescriptionSet = true
+                peerConnection?.setRemoteDescription(SimpleSdpObserver(), sdp)
+            }
         }
         observeIceCandidates()
     }
@@ -77,19 +85,26 @@ class WebRtcSessionManager(
         initSession(isVideo)
         
         signaling.observeRoom { offer, _ ->
-            peerConnection?.setRemoteDescription(object : SimpleSdpObserver() {
-                override fun onSetSuccess() {
-                    peerConnection?.createAnswer(object : SimpleSdpObserver() {
-                        override fun onCreateSuccess(p0: SessionDescription?) {
-                            peerConnection?.setLocalDescription(object : SimpleSdpObserver() {
-                                override fun onSetSuccess() {
-                                    p0?.let { signaling.sendAnswer(it) }
-                                }
-                            }, p0)
+            if (!hasRemoteDescriptionSet) {
+                hasRemoteDescriptionSet = true
+                peerConnection?.setRemoteDescription(object : SimpleSdpObserver() {
+                    override fun onSetSuccess() {
+                        val constraints = MediaConstraints().apply {
+                            mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
+                            mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"))
                         }
-                    }, MediaConstraints())
-                }
-            }, offer)
+                        peerConnection?.createAnswer(object : SimpleSdpObserver() {
+                            override fun onCreateSuccess(p0: SessionDescription?) {
+                                peerConnection?.setLocalDescription(object : SimpleSdpObserver() {
+                                    override fun onSetSuccess() {
+                                        p0?.let { signaling.sendAnswer(it) }
+                                    }
+                                }, p0)
+                            }
+                        }, constraints)
+                    }
+                }, offer)
+            }
         }
         observeIceCandidates()
     }
@@ -193,15 +208,11 @@ class WebRtcSessionManager(
 
     fun switchCamera() {
         videoCapturer?.switchCamera(object : CameraVideoCapturer.CameraSwitchHandler {
-            override fun onCameraSwitchDone(isFront: Boolean) { isFrontCamera = isFront }
+            override fun onCameraSwitchDone(isFront: Boolean) {}
             override fun onCameraSwitchError(p0: String?) {}
         })
     }
 
-    /**
-     * Step 1 of Disconnect: Stop all active hardware and data flow.
-     * This should be called on the Main Thread.
-     */
     fun stopMedia() {
         try {
             videoCapturer?.stopCapture()
@@ -210,10 +221,6 @@ class WebRtcSessionManager(
         localAudioTrack?.setEnabled(false)
     }
 
-    /**
-     * Step 2 of Disconnect: Fully dispose WebRTC native objects.
-     * This is offloaded to a background thread to prevent UI freezing.
-     */
     fun dispose() {
         if (isDisposed) return
         isDisposed = true
@@ -222,11 +229,10 @@ class WebRtcSessionManager(
         
         executor.execute {
             try {
+                videoCapturer?.stopCapture()
                 videoCapturer?.dispose()
                 videoCapturer = null
                 
-                // Note: localVideoTrack and localAudioTrack are disposed when PeerConnection closes,
-                // but we null them out to prevent further use.
                 localVideoTrack = null
                 localAudioTrack = null
                 
@@ -236,7 +242,9 @@ class WebRtcSessionManager(
                 peerConnection?.close()
                 peerConnection = null
                 
-                peerConnectionFactory.dispose()
+                _peerConnectionFactory?.dispose()
+                _peerConnectionFactory = null
+
                 rootEglBase.release()
             } catch (e: Exception) {
                 e.printStackTrace()

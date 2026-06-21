@@ -42,7 +42,7 @@ android {
 
 dependencies {
     implementation(project(":webrtc-call"))
-    implementation(libs.google.webrtc)
+//    implementation(libs.google.webrtc)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -53,9 +53,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.database)
-
+//    implementation(platform(libs.firebase.bom))
+//    implementation(libs.firebase.database)
+//    implementation("com.google.firebase:firebase-common-ktx")
+    
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

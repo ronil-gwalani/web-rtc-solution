@@ -4,4 +4,8 @@
 4
 5    <uses-sdk android:minSdkVersion="24" />
 6
-7</manifest>
+7    <uses-permission android:name="android.permission.WAKE_LOCK" />
+7-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:5-68
+7-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:22-65
+8
+9</manifest>

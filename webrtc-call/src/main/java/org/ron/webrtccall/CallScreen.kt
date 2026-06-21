@@ -1,5 +1,7 @@
 package org.ron.webrtccall
 
+import android.app.Activity
+import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -14,11 +16,75 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.webrtc.*
 import kotlin.math.roundToInt
+
+@Composable
+fun CallScreen(
+    roomId: String,
+    isCaller: Boolean,
+    isAudioOnly: Boolean,
+    onCallEnded: () -> Unit
+) {
+    val viewModel: CallViewModel = viewModel()
+    
+    val isCalling by viewModel.isCalling.collectAsStateWithLifecycle()
+    val localTrack by viewModel.localTrack.collectAsStateWithLifecycle()
+    val remoteTrack by viewModel.remoteTrack.collectAsStateWithLifecycle()
+    val eglContext by viewModel.eglContext.collectAsStateWithLifecycle()
+    val callDuration by viewModel.callDuration.collectAsStateWithLifecycle()
+    val currentIsAudioOnly by viewModel.isAudioOnly.collectAsStateWithLifecycle()
+    val isMuted by viewModel.isMuted.collectAsStateWithLifecycle()
+    val isSpeakerOn by viewModel.isSpeakerOn.collectAsStateWithLifecycle()
+    val isVideoEnabled by viewModel.isVideoEnabled.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val activity = context as? Activity
+    
+    // Track if the call has actually started to avoid premature exit
+    var hasStarted by remember { mutableStateOf(false) }
+
+    // Initialize call
+    LaunchedEffect(roomId, isCaller, isAudioOnly) {
+        viewModel.initCall(roomId, isCaller, isAudioOnly)
+    }
+
+    // Keep screen on during call and handle exit
+    LaunchedEffect(isCalling) {
+        if (isCalling) {
+            hasStarted = true
+            activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else if (hasStarted) {
+            // Only end if we actually started calling previously
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            onCallEnded()
+        }
+    }
+
+    if (isCalling) {
+        CallScreen(
+            localTrack = localTrack,
+            remoteTrack = remoteTrack,
+            eglContext = eglContext,
+            callDuration = callDuration,
+            isAudioOnly = currentIsAudioOnly,
+            isMuted = isMuted,
+            isSpeakerOn = isSpeakerOn,
+            isVideoEnabled = isVideoEnabled,
+            onMuteToggle = { viewModel.toggleMic() },
+            onSpeakerToggle = { viewModel.toggleSpeaker() },
+            onVideoToggle = { viewModel.toggleVideo() },
+            onSwitchCamera = { viewModel.switchCamera() },
+            onEndCall = { viewModel.endCall() }
+        )
+    }
+}
 
 @Composable
 fun CallScreen(

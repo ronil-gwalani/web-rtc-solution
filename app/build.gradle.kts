@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.services)
 }
 
 android {
@@ -42,7 +41,6 @@ android {
 
 dependencies {
     implementation(project(":webrtc-call"))
-//    implementation(libs.google.webrtc)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -52,10 +50,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    
-//    implementation(platform(libs.firebase.bom))
-//    implementation(libs.firebase.database)
-//    implementation("com.google.firebase:firebase-common-ktx")
     
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

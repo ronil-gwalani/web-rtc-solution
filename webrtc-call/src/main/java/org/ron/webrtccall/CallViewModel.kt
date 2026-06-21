@@ -55,19 +55,17 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
         _callDuration.value = "Connecting..."
         currentRoomId = roomId
         
-        signaling = FirebaseSignaling(roomId)
+        val signalingClient = SignalingFactory.create(roomId)
+        signaling = signalingClient
         
         if (isCaller) {
             _isAudioOnly.value = isAudioOnly
             _isVideoEnabled.value = !isAudioOnly
             _isSpeakerOn.value = !isAudioOnly
             
-            signaling?.destroy()
-            signaling = FirebaseSignaling(roomId)
-            
             startSession(true, !isAudioOnly)
         } else {
-            signaling?.getCallType { isVideo ->
+            signalingClient.getCallType { isVideo ->
                 _isAudioOnly.value = !isVideo
                 _isVideoEnabled.value = isVideo
                 _isSpeakerOn.value = isVideo

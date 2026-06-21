@@ -1,7 +1,11 @@
 package org.ron.webrtccall
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.view.WindowManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -20,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.webrtc.*
@@ -33,6 +38,8 @@ fun CallScreen(
     onCallEnded: () -> Unit
 ) {
     val viewModel: CallViewModel = viewModel()
+    val context = LocalContext.current
+    val activity = context as? Activity
     
     val isCalling by viewModel.isCalling.collectAsStateWithLifecycle()
     val localTrack by viewModel.localTrack.collectAsStateWithLifecycle()
@@ -44,15 +51,48 @@ fun CallScreen(
     val isSpeakerOn by viewModel.isSpeakerOn.collectAsStateWithLifecycle()
     val isVideoEnabled by viewModel.isVideoEnabled.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val activity = context as? Activity
-    
-    // Track if the call has actually started to avoid premature exit
+    // State for pre-call checks
+    var permissionsGranted by remember { 
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    var showPermissionDialog by remember { mutableStateOf(false) }
+    var isInternetAvailable by remember { mutableStateOf(true) }
+    var showInternetDialog by remember { mutableStateOf(false) }
     var hasStarted by remember { mutableStateOf(false) }
 
-    // Initialize call
-    LaunchedEffect(roomId, isCaller, isAudioOnly) {
-        viewModel.initCall(roomId, isCaller, isAudioOnly)
+    val connectivityObserver = remember { NetworkConnectivityObserver(context) }
+    val networkStatus by connectivityObserver.observe().collectAsState(
+        initial = if (connectivityObserver.isConnected()) ConnectivityObserver.Status.Available else ConnectivityObserver.Status.Unavailable
+    )
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.CAMERA] == true && 
+                      permissions[Manifest.permission.RECORD_AUDIO] == true
+        permissionsGranted = granted
+        if (!granted) {
+            showPermissionDialog = true
+        }
+    }
+
+    // Handle Internet availability
+    LaunchedEffect(networkStatus) {
+        isInternetAvailable = networkStatus == ConnectivityObserver.Status.Available
+    }
+
+    // Trigger checks and initialization
+    LaunchedEffect(permissionsGranted, isInternetAvailable) {
+        if (!permissionsGranted) {
+            permissionLauncher.launch(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO))
+        } else if (!isInternetAvailable) {
+            showInternetDialog = true
+        } else {
+            viewModel.initCall(roomId, isCaller, isAudioOnly)
+        }
     }
 
     // Keep screen on during call and handle exit
@@ -65,6 +105,55 @@ fun CallScreen(
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             onCallEnded()
         }
+    }
+
+    // Dialogs
+    if (showPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                showPermissionDialog = false
+                onCallEnded() 
+            },
+            title = { Text("Permissions Required") },
+            text = { Text("Camera and Microphone permissions are necessary for making a call. Please grant them to proceed.") },
+            confirmButton = {
+                Button(onClick = {
+                    showPermissionDialog = false
+                    permissionLauncher.launch(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO))
+                }) { Text("Request Again") }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    showPermissionDialog = false
+                    onCallEnded() 
+                }) { Text("Cancel") }
+            }
+        )
+    }
+
+    if (showInternetDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                showInternetDialog = false
+                onCallEnded()
+            },
+            title = { Text("No Internet Connection") },
+            text = { Text("Please connect to the internet to start or join a call.") },
+            confirmButton = {
+                Button(onClick = {
+                    if (connectivityObserver.isConnected()) {
+                        showInternetDialog = false
+                        viewModel.initCall(roomId, isCaller, isAudioOnly)
+                    }
+                }) { Text("Try Again") }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    showInternetDialog = false
+                    onCallEnded()
+                }) { Text("Cancel") }
+            }
+        )
     }
 
     if (isCalling) {
@@ -87,7 +176,7 @@ fun CallScreen(
 }
 
 @Composable
-fun CallScreen(
+internal fun CallScreen(
     localTrack: VideoTrack?,
     remoteTrack: VideoTrack?,
     eglContext: EglBase.Context?,
@@ -198,7 +287,7 @@ fun CallScreen(
 }
 
 @Composable
-fun VideoRenderer(
+internal fun VideoRenderer(
     track: VideoTrack?,
     eglContext: EglBase.Context,
     modifier: Modifier = Modifier,
@@ -238,6 +327,6 @@ fun VideoRenderer(
 }
 
 @Composable
-fun CallControlIcon(icon: ImageVector, desc: String, tint: Color, onClick: () -> Unit) {
+internal fun CallControlIcon(icon: ImageVector, desc: String, tint: Color, onClick: () -> Unit) {
     IconButton(onClick = onClick) { Icon(icon, desc, tint = tint, modifier = Modifier.size(28.dp)) }
 }

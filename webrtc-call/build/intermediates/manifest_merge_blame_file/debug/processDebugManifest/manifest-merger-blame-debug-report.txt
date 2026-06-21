@@ -7,5 +7,36 @@
 7    <uses-permission android:name="android.permission.WAKE_LOCK" />
 7-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:5-68
 7-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:22-65
-8
-9</manifest>
+8    <uses-permission android:name="android.permission.INTERNET" />
+8-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:4:5-67
+8-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:4:22-64
+9    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+9-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:5-79
+9-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:22-76
+10    <uses-permission android:name="android.permission.CAMERA" />
+10-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:6:5-65
+10-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:6:22-62
+11    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+11-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:7:5-71
+11-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:7:22-68
+12    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+12-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:8:5-80
+12-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:8:22-77
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:5-79
+13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:22-76
+14
+15    <uses-feature
+15-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:5-85
+16        android:name="android.hardware.camera"
+16-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:19-57
+17        android:required="false" />
+17-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:58-82
+18    <uses-feature
+18-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:5-95
+19        android:name="android.hardware.camera.autofocus"
+19-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:19-67
+20        android:required="false" />
+20-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:68-92
+21
+22</manifest>

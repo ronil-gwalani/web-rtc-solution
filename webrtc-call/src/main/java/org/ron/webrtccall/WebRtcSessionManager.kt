@@ -7,7 +7,7 @@ import android.os.Looper
 import org.webrtc.*
 import java.util.concurrent.Executors
 
-class WebRtcSessionManager(
+internal class WebRtcSessionManager(
     private val context: Context,
     private val signaling: WebRtcSignaling,
     private val onLocalTrack: (VideoTrack) -> Unit,

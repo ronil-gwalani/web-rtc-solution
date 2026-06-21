@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 
-class FirebaseSignaling(private val roomId: String) : WebRtcSignaling {
+internal class FirebaseSignaling(private val roomId: String) : WebRtcSignaling {
 
     private val db = FirebaseDatabase.getInstance().getReference("rooms").child(roomId)
     private val gson = Gson()

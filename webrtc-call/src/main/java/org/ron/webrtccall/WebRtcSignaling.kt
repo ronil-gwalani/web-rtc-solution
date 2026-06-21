@@ -3,7 +3,7 @@ package org.ron.webrtccall
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 
-interface WebRtcSignaling {
+internal interface WebRtcSignaling {
     fun sendOffer(sdp: SessionDescription, isVideo: Boolean)
     fun sendAnswer(sdp: SessionDescription)
     fun sendIceCandidate(candidate: IceCandidate, isCaller: Boolean)

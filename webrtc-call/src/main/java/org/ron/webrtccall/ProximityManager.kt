@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.PowerManager
 import android.util.Log
 
-class ProximityManager(context: Context) {
+internal class ProximityManager(context: Context) {
     private val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
     private var wakeLock: PowerManager.WakeLock? = null
 

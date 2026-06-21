@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 import org.webrtc.EglBase
 
-class CallViewModel(application: Application) : AndroidViewModel(application) {
+internal class CallViewModel(application: Application) : AndroidViewModel(application) {
 
     private var sessionManager: WebRtcSessionManager? = null
     private var signaling: WebRtcSignaling? = null
@@ -65,7 +65,7 @@ class CallViewModel(application: Application) : AndroidViewModel(application) {
             signaling?.destroy()
             signaling = FirebaseSignaling(roomId)
             
-            startSession(isCaller, !isAudioOnly)
+            startSession(true, !isAudioOnly)
         } else {
             signaling?.getCallType { isVideo ->
                 _isAudioOnly.value = !isVideo

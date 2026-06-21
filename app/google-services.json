@@ -1,0 +1,134 @@
+{
+  "project_info": {
+    "project_number": "873551401245",
+    "firebase_url": "https://ron-projects-85893-default-rtdb.firebaseio.com",
+    "project_id": "ron-projects-85893",
+    "storage_bucket": "ron-projects-85893.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:69053a7b6f587c24b091f4",
+        "android_client_info": {
+          "package_name": "com.ron.chatting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:f2f66e285adfbc09b091f4",
+        "android_client_info": {
+          "package_name": "com.ron.sinch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873551401245-ai58hj8gcs2f3see9jj5u1dpafu5cbgj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ron.sinch",
+            "certificate_hash": "cdd0d3efe24cb8076ceb9c62b7de8eaf5c53cab1"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:9515cd2e08422253b091f4",
+        "android_client_info": {
+          "package_name": "com.ronil.acubemusicindia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:7a9fd4c567ce7079b091f4",
+        "android_client_info": {
+          "package_name": "org.ron.webRtcSolution"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:beb2413936231739b091f4",
+        "android_client_info": {
+          "package_name": "org.ronil.hissab2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:3e26a20024e83f0bb091f4",
+        "android_client_info": {
+          "package_name": "org.ronil.webrtclearning"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,19 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.google.dagger.hilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "com.renxo.user"
-    compileSdk = 35
+    namespace = "org.ron.webRtcSolution"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.renxo.user"
+        applicationId = "org.ron.webRtcSolution"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -23,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -31,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -43,41 +41,26 @@ android {
 }
 
 dependencies {
+    implementation(project(":webrtc-call"))
+    implementation(libs.google.webrtc)
 
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database)
+
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
-//    implementation(libs.gson)
-    implementation(libs.androidx.navigation.common.ktx)
-    implementation(libs.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.ktor.client.auth)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.slf4j.api)
-    implementation(libs.slf4j.simple)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.coil.compose)
-
-
-
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }

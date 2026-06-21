@@ -1,5 +1,0 @@
-package com.renxo.user.dynamicUI
-
-enum class InputType {
-    EDIT_TEXT, EDIT_TEXT_NUMBER, CHECKBOX, DATE_TIME, DATE, DROPDOWN, MULTISELECT, RADIO, MULTIPLE_SCANNING, TOGGLE, BUTTON
-}

@@ -8,7 +8,7 @@ object SignalingConfig {
      */
 //    const val HOST = "10.225.7.191"
     const val HOST = "10.0.2.2"
-34
+
 
     /**
      * The port your Ktor server is listening on.

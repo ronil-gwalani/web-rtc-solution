@@ -1,3 +1,7 @@
+/**
+ * Created by Ronil Gwalani
+ * WebRTC Solution - Call UI Screen
+ */
 package org.ron.webrtccall
 
 import android.Manifest
@@ -26,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import org.webrtc.*
 import kotlin.math.roundToInt
+
 
 @Composable
 fun CallScreen(
@@ -37,7 +42,7 @@ fun CallScreen(
     isAudioOnly: Boolean,
     onCallEnded: () -> Unit
 ) {
-    val viewModel: CallViewModel = viewModel()
+    val viewModel: CallViewModel = koinViewModel()
     val context = LocalContext.current
     val activity = context as? Activity
     

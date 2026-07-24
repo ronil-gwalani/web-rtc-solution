@@ -12,7 +12,8 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
 
 fun main() {
-    embeddedServer(CIO, port = 8080, host = "0.0.0.0", module = Application::module)
+    val port = System.getenv("PORT")?.toInt() ?: 8080
+    embeddedServer(CIO, port = port, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 

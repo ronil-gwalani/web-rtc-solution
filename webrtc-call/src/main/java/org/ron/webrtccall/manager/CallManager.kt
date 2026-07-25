@@ -8,6 +8,8 @@ import android.content.Intent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+
 import org.ron.webrtccall.models.CallState
 import org.ron.webrtccall.models.IncomingCall
 
@@ -16,6 +18,9 @@ interface CallManager {
     suspend fun registerUser(userId: String, userName: String): Result<Unit>
 
     val isRegistered: Flow<Boolean>
+
+     val userId: Flow<String?>
+     val userName: Flow<String?>
 
     val currentCall: StateFlow<CallState>
     val incomingCall: SharedFlow<IncomingCall>

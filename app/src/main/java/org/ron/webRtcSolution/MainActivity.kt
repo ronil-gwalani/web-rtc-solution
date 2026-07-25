@@ -26,12 +26,12 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.ron.webRtcSolution.RegistrationViewModel.RegistrationState
-import org.ron.webrtccall.WebRtcCallHandler
-import org.ron.webrtccall.manager.CallManager
+//import org.ron.webrtccall.WebRtcCallHandler
+//import org.ron.webrtccall.manager.CallManager
 
 class MainActivity : ComponentActivity() {
 
-    private val callManager: CallManager by inject()
+//    private val callManager: CallManager by inject()
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        callManager.handleIntent(intent)
+//        callManager.handleIntent(intent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -53,45 +53,45 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            val isRegistered by callManager.isRegistered.collectAsState(initial = null)
-            Box(modifier = Modifier.fillMaxSize()) {
-                if (isRegistered == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                } else if (isRegistered == false) {
-                    val viewModel: RegistrationViewModel = koinViewModel()
-                    RegistrationScreen(viewModel, registerUser = { userID, userName ->
-                        viewModel.viewModelScope.launch {
-                            callManager.registerUser(userID, userName).onSuccess {
-                                viewModel.setStatus(RegistrationState.Success)
-                            }.onFailure { e ->
-                                viewModel.setStatus(
-                                    RegistrationState.Error(e.message ?: "Registration failed"))
-                            }
-                        }
-                    }, onRegistrationSuccess = {})
-                } else {
-                    val viewModel: HomeViewModel = koinViewModel()
-                    HomeScreen(viewModel)
-                    // The library handles all call UI (Incoming and Active)
-                    WebRtcCallHandler(onDecline = {
-                        viewModel.targetId = ""
-                    }, onCallEnded = {
-                        viewModel.targetId = ""
-                    }, onAnswer = {
-                        Log.d("onCreate", ":Call started  ")
-                    })
-
-                }
-            }
+//            val isRegistered by callManager.isRegistered.collectAsState(initial = null)
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                if (isRegistered == null) {
+//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                        CircularProgressIndicator()
+//                    }
+//                } else if (isRegistered == false) {
+//                    val viewModel: RegistrationViewModel = koinViewModel()
+//                    RegistrationScreen(viewModel, registerUser = { userID, userName ->
+//                        viewModel.viewModelScope.launch {
+//                            callManager.registerUser(userID, userName).onSuccess {
+//                                viewModel.setStatus(RegistrationState.Success)
+//                            }.onFailure { e ->
+//                                viewModel.setStatus(
+//                                    RegistrationState.Error(e.message ?: "Registration failed"))
+//                            }
+//                        }
+//                    }, onRegistrationSuccess = {})
+//                } else {
+//                    val viewModel: HomeViewModel = koinViewModel()
+//                    HomeScreen(viewModel)
+//                    // The library handles all call UI (Incoming and Active)
+//                    WebRtcCallHandler(onDecline = {
+//                        viewModel.targetId = ""
+//                    }, onCallEnded = {
+//                        viewModel.targetId = ""
+//                    }, onAnswer = {
+//                        Log.d("onCreate", ":Call started  ")
+//                    })
+//
+//                }
+//            }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        callManager.handleIntent(intent)
+//        callManager.handleIntent(intent)
     }
 
 

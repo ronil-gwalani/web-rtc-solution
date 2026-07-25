@@ -11,10 +11,10 @@ import org.koin.dsl.module
 import org.ron.webRtcSolution.HomeViewModel
 import org.ron.webRtcSolution.R
 import org.ron.webRtcSolution.RegistrationViewModel
-import org.ron.webrtccall.network.SecretInputStream
+//import org.ron.webrtccall.network.SecretInputStream
 
 val appModule = module {
-    single<SecretInputStream> { SecretInputStream(get(), R.raw.service_account) }
+//    single<SecretInputStream> { SecretInputStream(get(), R.raw.service_account) }
     viewModelOf(::RegistrationViewModel)
     viewModelOf(::HomeViewModel)
 }

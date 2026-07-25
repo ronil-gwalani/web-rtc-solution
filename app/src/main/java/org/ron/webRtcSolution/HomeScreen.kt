@@ -20,16 +20,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.ron.webrtccall.manager.CallManager
 import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    val callManager: CallManager = koinInject()
-    val userId by viewModel.userId.collectAsState()
-    val userName by viewModel.userName.collectAsState()
+    val userId =""//by viewModel.userId.collectAsState()
+    val userName =""//by viewModel.userName.collectAsState()
 
-    var isStartingCall by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -108,7 +105,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (isStartingCall) {
+            if (viewModel.isStartingCall) {
                 CircularProgressIndicator(modifier = Modifier.size(48.dp))
             } else {
                 Row(
@@ -118,14 +115,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
                     Button(
                         onClick = {
                             if (viewModel.targetId.isNotBlank()) {
-                                isStartingCall = true
                                 viewModel.startCall(
                                     viewModel.targetId,
                                     false
-                                ) { roomId, isAudioOnly ->
-                                    isStartingCall = false
-                                    callManager.startCallUI(roomId, isAudioOnly)
-                                }
+                                )
                             }
                         },
                         modifier = Modifier
@@ -143,14 +136,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
                     Button(
                         onClick = {
                             if (viewModel.targetId.isNotBlank()) {
-                                isStartingCall = true
                                 viewModel.startCall(
                                     viewModel.targetId,
                                     true
-                                ) { roomId, isAudioOnly ->
-                                    isStartingCall = false
-                                    callManager.startCallUI(roomId, isAudioOnly)
-                                }
+                                )
                             }
                         },
                         modifier = Modifier

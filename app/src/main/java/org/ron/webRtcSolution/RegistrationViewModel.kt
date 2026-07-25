@@ -9,9 +9,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.ron.webrtccall.repository.UserRepository
 
-class RegistrationViewModel(private val userRepository: UserRepository) : ViewModel() {
+class RegistrationViewModel : ViewModel() {
 
     private val _registrationState = MutableStateFlow<RegistrationState>(RegistrationState.Idle)
     val registrationState: StateFlow<RegistrationState> = _registrationState
@@ -20,19 +19,6 @@ class RegistrationViewModel(private val userRepository: UserRepository) : ViewMo
         _registrationState.value = state
     }
 
-    fun register(userId: String, userName: String) {
-        viewModelScope.launch {
-            _registrationState.value = RegistrationState.Loading
-            userRepository.registerUser(userId, userName)
-                .onSuccess {
-                    _registrationState.value = RegistrationState.Success
-                }
-                .onFailure { e ->
-                    _registrationState.value =
-                        RegistrationState.Error(e.message ?: "Registration failed")
-                }
-        }
-    }
 
     sealed class RegistrationState {
         object Idle : RegistrationState()

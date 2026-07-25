@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import org.ron.webrtccall.CallViewModel
 import org.ron.webrtccall.data.PreferenceManager
@@ -63,5 +64,6 @@ val libraryModule = module {
     single<CallManager> { WebRtcCallManager(get(), get(), get()) }
 
     // ViewModels
-    viewModel { CallViewModel(get(), get(), get()) }
+    viewModelOf(::CallViewModel)
+
 }

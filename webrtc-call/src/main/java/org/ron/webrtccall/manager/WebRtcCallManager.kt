@@ -7,6 +7,7 @@ package org.ron.webrtccall.manager
 import android.content.Intent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+
 import org.ron.webrtccall.data.PreferenceProvider
 import org.ron.webrtccall.models.CallState
 import org.ron.webrtccall.models.IncomingCall
@@ -31,6 +32,8 @@ class WebRtcCallManager(
     }
 
     override val isRegistered: Flow<Boolean> = preferenceProvider.isRegistered
+    override val userId: Flow<String?> = preferenceProvider.userId
+    override val userName: Flow<String?> = preferenceProvider.userName
 
     private val _incomingCall = MutableSharedFlow<IncomingCall>(extraBufferCapacity = 1)
     override val incomingCall: SharedFlow<IncomingCall> = _incomingCall.asSharedFlow()

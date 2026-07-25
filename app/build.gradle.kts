@@ -51,7 +51,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":webrtc-call"))
+//    implementation(project(":webrtc-call"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

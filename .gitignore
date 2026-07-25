@@ -5,7 +5,7 @@ build/
 
 # Service account credentials
 #*.json
-webrtc-call/src/main/res/raw/service_account.json
+#webrtc-call/src/main/res/raw/service_account.json
 
 # Firebase / Google Services
 #google-services.json
@@ -14,8 +14,8 @@ GoogleService-Info.plist
 **/GoogleService-Info.plist
 
 # Service account keys
-service-account.json
-service_account.json
+#service-account.json
+#service_account.json
 firebase-service-account.json
 *.p12
 *.pem

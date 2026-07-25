@@ -16,14 +16,16 @@ class FcmNotificationSender(
     private val api: FcmApiService,
     private val inputStream: SecretInputStream
 ) : SignalingService {
+    private val googleCredentials by lazy {
+        GoogleCredentials
+            .fromStream(inputStream.getImputeStream())
+            .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
+    }
 
     private suspend fun getAccessToken(): String? = withContext(Dispatchers.IO) {
         val savedToken = preferenceProvider.getOAuthToken()
-        if (savedToken.isEmpty()) {
+        savedToken.ifEmpty {
             try {
-                val googleCredentials = GoogleCredentials
-                    .fromStream(inputStream.getImputeStream())
-                    .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
                 googleCredentials.refresh()
                 val token = "Bearer ${googleCredentials.accessToken.tokenValue}"
                 preferenceProvider.saveOAuthToken(token)
@@ -32,8 +34,6 @@ class FcmNotificationSender(
                 e.printStackTrace()
                 null
             }
-        } else {
-            savedToken
         }
     }
 
@@ -47,7 +47,7 @@ class FcmNotificationSender(
         try {
             val authHeader = getAccessToken()
                 ?: return@withContext Result.failure(Exception("Failed to get access token"))
-            val projectId = "ron-projects-85893"
+            val projectId = googleCredentials.projectId
             val request = FcmRequest(
                 message = RonPushNewNotificationMessageModel(
                     token = targetToken,

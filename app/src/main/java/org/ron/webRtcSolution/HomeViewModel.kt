@@ -35,7 +35,7 @@ class HomeViewModel(
         targetUserId: String,
         isAudioOnly: Boolean,
     ) {
-        _isStartingCall = true
+//        _isStartingCall = true
 //        viewModelScope.launch {
 //            _isStartingCall = false
 //            callManager.startCall(targetUserId, isAudioOnly)

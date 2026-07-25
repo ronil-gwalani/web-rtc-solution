@@ -1,84 +1,79 @@
-# WebRTC Solution
+# 📞 WebRTC Solution
 
 A plug-and-play **WebRTC Voice & Video Calling Library** for Android built with **Jetpack Compose**, **Firebase**, **Koin**, and **Google WebRTC**.
 
-Stop spending weeks integrating WebRTC. Add a dependency, connect Firebase, register users, and you're ready to make voice and video calls.
+This library eliminates the complexity of integrating WebRTC from scratch. Simply configure Firebase, add the dependency, register your users, and start making high-quality voice and video calls.
 
 ---
 
 ## ✨ Features
 
-- 📹 High-quality Video Calling
-- 📞 Crystal Clear Voice Calling
-- ⚡ Firebase Realtime Signaling
-- 🎨 Beautiful Jetpack Compose UI
-- 📲 Incoming Call Screen
-- 🔔 Background Incoming Call Support
-- 🔒 Lock Screen Incoming Calls
-- 🎤 Mute / Unmute
-- 🔄 Camera Switching
-- 🔊 Speaker Switching
-- ☁️ Firebase Cloud Messaging Support
-- 🧩 Koin Dependency Injection
-- 📦 Google WebRTC Included
-- 🆓 Completely Free
+* 📹 High-quality Video Calling
+* 📞 Crystal Clear Voice Calling
+* ⚡ Firebase Realtime Database Signaling
+* 🔥 Firebase Cloud Firestore Integration
+* 🎨 Built entirely with Jetpack Compose
+* 📲 Beautiful Incoming Call UI
+* 📱 Active Call Screen Included
+* 🔔 Background Incoming Call Support
+* 🔒 Lock Screen Incoming Call Support
+* 🎤 Mute / Unmute
+* 🔄 Camera Switching
+* 🔊 Speaker Switching
+* ☁️ Firebase Cloud Messaging Support
+* 🧩 Koin Dependency Injection
+* 📦 Google WebRTC Included
+* 🚀 Easy Integration
+* 🆓 Completely Free
 
 ---
 
-## Requirements
+# Requirements
 
-| Requirement | Version |
-|-------------|---------|
-| Min SDK | 24 |
-| Compile SDK | 37 |
-| Target SDK | 37 |
-| Kotlin | 2.4.10 |
+| Requirement | Version    |
+| ----------- | ---------- |
+| Min SDK     | 24         |
+| Compile SDK | 37         |
+| Target SDK  | 37         |
+| Kotlin      | 2.4.10     |
 | Compose BOM | 2026.06.01 |
-| Koin | 4.2.2 |
+| Koin        | 4.2.2      |
 
 ---
 
-# Installation
+# Integration Flow
 
-## Step 1
+The recommended integration flow is:
 
-Add JitPack.
-
-```kotlin
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-    }
-}
+```
+1. Configure Firebase
+        ↓
+2. Add Dependency
+        ↓
+3. Create Koin Module
+        ↓
+4. Start Koin
+        ↓
+5. Inject CallManager
+        ↓
+6. Register User
+        ↓
+7. Handle Notification Intents
+        ↓
+8. Add WebRtcCallHandler
+        ↓
+9. Start Calling 🚀
 ```
 
 ---
 
-## Step 2
+# Step 1 - Configure Firebase
 
-Add the dependency.
+Create a Firebase project and enable the following services:
 
-```kotlin
-dependencies {
-    implementation("com.github.ronil-gwalani:web-rtc-solution:v1.0.1")
-}
-```
-
----
-
-# Firebase Setup
-
-Before using this library you must create a Firebase project.
-
-Enable
-
-- Firebase Cloud Messaging
-- Realtime Database
-- Cloud Firestore
+* Firebase Cloud Messaging (FCM)
+* Realtime Database
+* Cloud Firestore
 
 Download
 
@@ -92,7 +87,9 @@ and place it inside
 app/
 ```
 
-Next, create a Firebase Service Account and download
+Next, create a Firebase Service Account.
+
+Download
 
 ```
 service_account.json
@@ -104,26 +101,57 @@ Place it inside
 app/src/main/res/raw/
 ```
 
-Example:
+Example
 
 ```
 app
- └── src
-      └── main
-           └── res
-                └── raw
-                     └── service_account.json
+└── src
+    └── main
+        └── res
+            └── raw
+                └── service_account.json
 ```
 
 > **Note**
 >
-> The example project uses open Firebase rules (`true`) for simplicity. For production applications, configure secure Firebase Security Rules according to your requirements.
+> The sample project uses open Firebase Security Rules (`true`) for demonstration purposes. Configure secure rules before deploying your application to production.
 
 ---
 
-# Koin Setup
+# Step 2 - Add the Library
 
-Create your application module.
+Add **JitPack** to your project.
+
+```kotlin
+dependencyResolutionManagement {
+
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+Now add the dependency.
+
+```kotlin
+dependencies {
+    implementation("com.github.ronil-gwalani:web-rtc-solution:v1.0.1")
+}
+```
+
+The library already bundles all required dependencies including Google WebRTC, Firebase, Koin, and Compose integrations.
+
+No additional WebRTC dependency is required.
+
+---
+
+# Step 3 - Create the Koin Module
+
+Create an application module.
 
 ```kotlin
 val appModule = module {
@@ -138,11 +166,13 @@ val appModule = module {
 }
 ```
 
+This allows the library to access your Firebase Service Account securely.
+
 ---
 
-# Start Koin
+# Step 4 - Start Koin
 
-Create your Application class.
+Create your `Application` class.
 
 ```kotlin
 class MainApplication : Application() {
@@ -171,38 +201,75 @@ class MainApplication : Application() {
 
 ---
 
-# AndroidManifest
+# Step 5 - Register the Application Class
 
-Register your Application class.
+Update your `AndroidManifest.xml`
 
 ```xml
 <application
     android:name=".MainApplication"
+    android:allowBackup="true"
     ...
 />
 ```
 
 ---
 
-# Handle Notification Intents
+# Step 6 - Inject the CallManager
 
-Inside your `MainActivity`, call
+`CallManager` is the main entry point of the library.
+
+Inject it using Koin.
+
+### Activity
+
+```kotlin
+private val callManager: CallManager by inject()
+```
+
+### Fragment
+
+```kotlin
+private val callManager: CallManager by inject()
+```
+
+### Compose
+
+```kotlin
+val callManager: CallManager = koinInject()
+```
+
+### ViewModel Constructor
+
+```kotlin
+class HomeViewModel(
+    private val callManager: CallManager
+) : ViewModel()
+```
+
+Once injected, the `CallManager` provides everything needed to interact with the library.
+
+* User Registration
+* Voice Calls
+* Video Calls
+* End Call
+* Notification Handling
+* User Information
+
+---
+
+# Step 7 - Handle Notification Intents
+
+To properly handle incoming calls launched from notifications, call:
 
 ```kotlin
 callManager.handleIntent(intent)
 ```
 
-inside
+inside both
 
-```kotlin
-onCreate()
-```
-
-and
-
-```kotlin
-onNewIntent()
-```
+* `onCreate()`
+* `onNewIntent()`
 
 Example
 
@@ -222,9 +289,9 @@ override fun onNewIntent(intent: Intent) {
 
 ---
 
-# Register User
+# Step 8 - Register a User
 
-Before making calls every user must register once.
+Every user must register once before making or receiving calls.
 
 ```kotlin
 callManager.registerUser(
@@ -233,17 +300,13 @@ callManager.registerUser(
 )
 ```
 
-You can observe registration state using
+Observe registration state
 
 ```kotlin
 callManager.isRegistered
 ```
 
----
-
-# Access Current User
-
-The currently registered user information is available as
+Retrieve current user information
 
 ```kotlin
 callManager.userId
@@ -251,60 +314,26 @@ callManager.userId
 callManager.userName
 ```
 
----
-
-# Making Calls
-
-Start a Video Call
-
-```kotlin
-callManager.startCall(
-    targetId,
-    false
-)
-```
-
-Start a Voice Call
-
-```kotlin
-callManager.startCall(
-    targetId,
-    true
-)
-```
-
-Once the room is created, launch the call UI.
-
-```kotlin
-callManager.startCallUI(
-    roomId,
-    isAudioOnly
-)
-```
-
----
-
-# End Call
-
-If you want to manually terminate the call
-
-```kotlin
-callManager.endCall()
-```
-
----
-
-# Incoming Calls
-
-Simply place
-
-```kotlin
-WebRtcCallHandler()
-```
-
-inside your root Compose screen.
-
 Example
+
+```kotlin
+val isRegistered by callManager.isRegistered.collectAsState(initial = null)
+
+if (isRegistered == false) {
+
+    callManager.registerUser(
+        userId,
+        userName
+    )
+
+}
+```
+
+---
+
+# Step 9 - Add the Call Handler
+
+Place `WebRtcCallHandler` near the root of your Compose hierarchy.
 
 ```kotlin
 WebRtcCallHandler(
@@ -320,25 +349,111 @@ WebRtcCallHandler(
 )
 ```
 
-The library automatically handles
+The library automatically manages:
 
-- Incoming call UI
-- Active call screen
-- Call notifications
-- Voice calls
-- Video calls
+* Incoming Call Screen
+* Active Call Screen
+* Voice Calls
+* Video Calls
+* Call Notifications
 
 ---
 
-# Home Screen Example
+# Step 10 - Start Calling
 
-After successful registration, users can enter another user's unique ID and start either a voice or video call.
+After registration, users can call each other using their unique user ID.
+
+A typical implementation looks like this.
+
+```kotlin
+class HomeViewModel(
+    private val callManager: CallManager
+) : ViewModel() {
+
+    var targetId by mutableStateOf("")
+
+    private var _isStartingCall by mutableStateOf(false)
+    val isStartingCall = _isStartingCall
+
+    fun startCall(
+        targetUserId: String,
+        isAudioOnly: Boolean,
+    ) {
+
+        _isStartingCall = true
+
+        viewModelScope.launch {
+
+            _isStartingCall = false
+
+            callManager.startCall(
+                targetUserId,
+                isAudioOnly
+            )
+                .onSuccess { roomId ->
+
+                    callManager.startCallUI(
+                        roomId,
+                        isAudioOnly
+                    )
+                }
+        }
+    }
+}
+```
+
+---
+
+## Start a Video Call
+
+```kotlin
+startCall(
+    targetUserId = "john123",
+    isAudioOnly = false
+)
+```
+
+---
+
+## Start a Voice Call
+
+```kotlin
+startCall(
+    targetUserId = "john123",
+    isAudioOnly = true
+)
+```
+
+---
+
+## Parameters
+
+| Parameter      | Description                                        |
+| -------------- | -------------------------------------------------- |
+| `targetUserId` | Unique ID of the registered user you want to call. |
+| `isAudioOnly`  | `true` for Voice Call, `false` for Video Call.     |
+
+---
+
+# End a Call
+
+If you need to terminate the call manually based on your application logic, simply call
+
+```kotlin
+callManager.endCall()
+```
+
+---
+
+# Sample Home Screen
+
+After successful registration, display your home screen where users can enter another user's unique ID and initiate a voice or video call.
 
 ```kotlin
 HomeScreen(viewModel)
 ```
 
-The sample implementation included in this repository demonstrates the complete flow.
+A complete implementation is included in the sample application.
 
 ---
 
@@ -346,106 +461,99 @@ The sample implementation included in this repository demonstrates the complete 
 
 The library already includes all required WebRTC dependencies.
 
-For notification permission (Android 13+), it is recommended that the host application requests notification permission according to its own UX flow.
-
----
-
-# Included Dependencies
-
-This library already bundles all required dependencies including
-
-- Google WebRTC
-- Firebase
-- Koin
-- Jetpack Compose integrations
-- Lifecycle components
-
-No additional WebRTC dependency is required.
+The host application should request notification permission (`POST_NOTIFICATIONS`) on Android 13+ according to its own UX flow.
 
 ---
 
 # Current Features
 
-| Feature | Supported |
-|-----------|-----------|
-| Voice Call | ✅ |
-| Video Call | ✅ |
-| Background Incoming Call | ✅ |
-| Lock Screen Support | ✅ |
-| Camera Switch | ✅ |
-| Speaker Switch | ✅ |
-| Mute | ✅ |
-| Manual End Call | ✅ |
-| Compose UI | ✅ |
-| Firebase Signaling | ✅ |
-
----
-
-# Roadmap
-
-Upcoming releases will include
-
-- Custom Call UI
-- UI Theme Customization
-- Custom Incoming Call Screen
-- Custom Ringtones
-- Call History
-- Connection State Callbacks
-- Network Quality Monitoring
-- Presence API
-- Busy Status
-- Group Calling
+| Feature                    | Status |
+| -------------------------- | ------ |
+| Voice Calling              | ✅      |
+| Video Calling              | ✅      |
+| Background Incoming Calls  | ✅      |
+| Lock Screen Incoming Calls | ✅      |
+| Camera Switching           | ✅      |
+| Speaker Switching          | ✅      |
+| Mute / Unmute              | ✅      |
+| Manual End Call            | ✅      |
+| Firebase Signaling         | ✅      |
+| Jetpack Compose UI         | ✅      |
+| Firebase Notifications     | ✅      |
+| Koin Integration           | ✅      |
 
 ---
 
 # Example Project
 
-A complete sample application demonstrating the full integration is included in this repository.
+A fully working sample application is included in this repository.
 
-It covers
+It demonstrates:
 
-- Firebase setup
-- User registration
-- Voice calling
-- Video calling
-- Incoming calls
-- Notifications
+* Firebase Setup
+* User Registration
+* Home Screen
+* Voice Calling
+* Video Calling
+* Incoming Calls
+* Notifications
+* Call Lifecycle
 
 ---
 
 # Troubleshooting
 
-## Incoming calls not working
+## Incoming Calls Not Working
 
-- Verify Firebase Cloud Messaging is enabled.
-- Verify `service_account.json` is placed inside `res/raw`.
-- Ensure notification permission is granted.
-- Confirm `callManager.handleIntent(intent)` is called in both `onCreate()` and `onNewIntent()`.
-
----
-
-## User registration fails
-
-- Verify Firebase configuration.
-- Verify Firestore and Realtime Database are enabled.
-- Check Firebase Security Rules.
+* Verify Firebase Cloud Messaging is enabled.
+* Verify `service_account.json` is inside `res/raw`.
+* Ensure notification permission is granted.
+* Verify `callManager.handleIntent(intent)` is called in both `onCreate()` and `onNewIntent()`.
 
 ---
 
-## Call not connecting
+## Registration Failed
 
-- Verify both users are registered.
-- Ensure the target user ID exists.
-- Check internet connectivity.
+* Verify Firebase configuration.
+* Verify Realtime Database is enabled.
+* Verify Firestore is enabled.
+* Verify Firebase Security Rules.
+
+---
+
+## Calls Not Connecting
+
+* Verify both users are registered.
+* Verify the target user exists.
+* Check internet connectivity.
+* Verify Firebase services are correctly configured.
+
+---
+
+# Roadmap
+
+Upcoming releases will include:
+
+* 🎨 Fully Customizable Call UI
+* 🌙 Theme Customization
+* 🎵 Custom Ringtones
+* 📜 Call History API
+* 📶 Connection State Callbacks
+* 📊 Network Quality Monitoring
+* 👤 User Presence
+* 🚫 Busy Status
+* 👥 Group Calling
 
 ---
 
 # License
 
-Licensed under the MIT License.
+This project is licensed under the MIT License.
 
 ---
 
-## ⭐ Support
+# Support
 
-If this project helps you, consider giving it a ⭐ on GitHub. It helps others discover the library and motivates future development.
+If this library helped you, please consider giving the repository a ⭐ on GitHub.
+
+It helps others discover the project and motivates future development.

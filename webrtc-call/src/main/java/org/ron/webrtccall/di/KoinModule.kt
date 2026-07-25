@@ -49,7 +49,7 @@ val libraryModule = module {
             .create(FcmApiService::class.java)
     }
     
-    single<SignalingService> { FcmNotificationSender(androidContext(), get(), get()) }
+    single<SignalingService> { FcmNotificationSender(androidContext(), get(), get(),get()) }
     single<SignalingClientFactory> { FirebaseSignalingFactory() }
     
     // WebRTC

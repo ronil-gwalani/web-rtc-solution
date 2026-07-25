@@ -14,14 +14,15 @@ import org.ron.webrtccall.data.PreferenceProvider
 class FcmNotificationSender(
     private val context: Context,
     private val preferenceProvider: PreferenceProvider,
-    private val api: FcmApiService
+    private val api: FcmApiService,
+     private val resourceFile: Int
 ) : SignalingService {
 
     private suspend fun getAccessToken(): String? = withContext(Dispatchers.IO) {
         val savedToken = preferenceProvider.getOAuthToken()
         if (savedToken.isEmpty()) {
             try {
-                val inputStream = context.resources.openRawResource(R.raw.service_account)
+                val inputStream = context.resources.openRawResource(resourceFile)
                 val googleCredentials = GoogleCredentials
                     .fromStream(inputStream)
                     .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
@@ -46,8 +47,9 @@ class FcmNotificationSender(
         isAudioOnly: Boolean
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val authHeader = getAccessToken() ?: return@withContext Result.failure(Exception("Failed to get access token"))
-            val projectId = "ron-projects-85893" 
+            val authHeader = getAccessToken()
+                ?: return@withContext Result.failure(Exception("Failed to get access token"))
+            val projectId = "ron-projects-85893"
             val request = FcmRequest(
                 message = RonPushNewNotificationMessageModel(
                     token = targetToken,
@@ -67,9 +69,13 @@ class FcmNotificationSender(
             } else {
                 preferenceProvider.clearSavedOAuthToken()
                 // Retry once
-                val newAuthHeader = getAccessToken() ?: return@withContext Result.failure(Exception("Retry failed: no token"))
+                val newAuthHeader = getAccessToken() ?: return@withContext Result.failure(
+                    Exception(
+                        "Retry failed: no token"
+                    )
+                )
                 val retryResponse = api.sendMessage(projectId, newAuthHeader, request)
-                if (retryResponse.isSuccessful) Result.success(Unit) 
+                if (retryResponse.isSuccessful) Result.success(Unit)
                 else Result.failure(Exception("FCM Error: ${retryResponse.errorBody()?.string()}"))
             }
         } catch (e: Exception) {

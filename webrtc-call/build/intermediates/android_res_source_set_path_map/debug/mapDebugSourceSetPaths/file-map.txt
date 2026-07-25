@@ -1,0 +1,10 @@
+org.ron.webrtccall.webrtc-call-pngs-0 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/generated/res/pngs/debug
+org.ron.webrtccall.webrtc-call-resValues-1 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/generated/res/resValues/debug
+org.ron.webrtccall.webrtc-call-updated_navigation_xml-2 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/generated/updated_navigation_xml/debug
+org.ron.webrtccall.webrtc-call-mergeDebugResources-3 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
+org.ron.webrtccall.webrtc-call-mergeDebugResources-4 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
+org.ron.webrtccall.webrtc-call-debug-5 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/intermediates/merged_res/debug/mergeDebugResources
+org.ron.webrtccall.webrtc-call-debug-6 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/build/intermediates/packaged_res/debug/packageDebugResources
+org.ron.webrtccall.webrtc-call-debug-7 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/debug/res
+org.ron.webrtccall.webrtc-call-main-8 /Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/res
+gradleHome-0 /Users/ronilgwalani/.gradle

@@ -3,6 +3,8 @@
 3    package="org.ron.webrtccall" >
 4
 5    <uses-sdk android:minSdkVersion="24" />
+5-->INJECTED
+5-->INJECTED
 6
 7    <uses-permission android:name="android.permission.WAKE_LOCK" />
 7-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:3:5-68
@@ -22,21 +24,32 @@
 12    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 12-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:8:5-80
 12-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:8:22-77
-13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:5-79
-13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:5:22-76
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:9:5-77
+13-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:9:22-74
 14
-15    <uses-feature
-15-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:5-85
-16        android:name="android.hardware.camera"
-16-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:19-57
-17        android:required="false" />
-17-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:10:58-82
-18    <uses-feature
-18-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:5-95
-19        android:name="android.hardware.camera.autofocus"
-19-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:19-67
-20        android:required="false" />
-20-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:68-92
-21
-22</manifest>
+15    <application>
+15-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:11:5-23:19
+16        <service
+16-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:12:9-18:19
+17            android:name="org.ron.webrtccall.CallMessagingService"
+17-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:13:13-49
+18            android:exported="false" >
+18-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:14:13-37
+19            <intent-filter>
+19-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:15:13-17:29
+20                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+20-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:16:17-78
+20-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:16:25-75
+21            </intent-filter>
+22        </service>
+23
+24        <receiver
+24-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:20:9-22:40
+25            android:name="org.ron.webrtccall.CallActionReceiver"
+25-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:21:13-47
+26            android:exported="false" />
+26-->/Users/ronilgwalani/Projects/web-rtc-solution/webrtc-call/src/main/AndroidManifest.xml:22:13-37
+27    </application>
+28
+29</manifest>

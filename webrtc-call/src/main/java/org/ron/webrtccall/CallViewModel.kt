@@ -1,22 +1,33 @@
+/**
+ * Created by Ronil Gwalani
+ * WebRTC Solution - Call Logic ViewModel
+ */
 package org.ron.webrtccall
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.ron.webrtccall.network.SignalingClientFactory
+import org.ron.webrtccall.network.WebRtcSignaling
+import org.ron.webrtccall.utils.ProximitySensor
+import org.ron.webrtccall.webrtc.SessionManager
+import org.ron.webrtccall.webrtc.SessionManagerFactory
 import org.webrtc.VideoTrack
 import org.webrtc.EglBase
 
-internal class CallViewModel(application: Application) : AndroidViewModel(application) {
+internal class CallViewModel(
+    private val signalingFactory: SignalingClientFactory,
+    private val sessionManagerFactory: SessionManagerFactory,
+    private val proximitySensor: ProximitySensor
+) : ViewModel() {
 
-    private var sessionManager: WebRtcSessionManager? = null
+    private var sessionManager: SessionManager? = null
     private var signaling: WebRtcSignaling? = null
     private var isEndingCall = false
     private var timerJob: Job? = null
-    private val proximityManager = ProximityManager(application)
 
     private val _localTrack = MutableStateFlow<VideoTrack?>(null)
     val localTrack: StateFlow<VideoTrack?> = _localTrack.asStateFlow()
@@ -45,6 +56,9 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
     private val _callDuration = MutableStateFlow("Connecting...")
     val callDuration: StateFlow<String> = _callDuration.asStateFlow()
 
+    private val _isDeclined = MutableStateFlow(false)
+    val isDeclined: StateFlow<Boolean> = _isDeclined.asStateFlow()
+
     private var currentRoomId: String? = null
 
     fun initCall(roomId: String, isCaller: Boolean, isAudioOnly: Boolean) {
@@ -55,16 +69,12 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
         _callDuration.value = "Connecting..."
         currentRoomId = roomId
         
-        signaling = FirebaseSignaling(roomId)
+        signaling = signalingFactory.create(roomId)
         
         if (isCaller) {
             _isAudioOnly.value = isAudioOnly
             _isVideoEnabled.value = !isAudioOnly
             _isSpeakerOn.value = !isAudioOnly
-            
-            signaling?.destroy()
-            signaling = FirebaseSignaling(roomId)
-            
             startSession(true, !isAudioOnly)
         } else {
             signaling?.getCallType { isVideo ->
@@ -82,22 +92,24 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
         signalingClient.observeDisconnect {
             if (!isEndingCall) endCall()
         }
-
-        sessionManager = WebRtcSessionManager(
-            context = getApplication(),
-            signaling = signalingClient,
-            onLocalTrack = { track ->
-                _localTrack.value = track
-            },
-            onRemoteTrack = { track ->
-                _remoteTrack.value = track
-            },
-            onConnectionEstablished = {
-                startTimer()
-            },
-            onConnectionClosed = { 
-                if (!isEndingCall) endCall()
+        
+        signalingClient.observeRejection {
+            if (!isEndingCall) {
+                _isDeclined.value = true
+                viewModelScope.launch {
+                    _callDuration.value = "Call Declined"
+                    delay(2000)
+                    endCall()
+                }
             }
+        }
+
+        sessionManager = sessionManagerFactory.create(
+            signaling = signalingClient,
+            onLocalTrack = { track -> _localTrack.value = track },
+            onRemoteTrack = { track -> _remoteTrack.value = track },
+            onConnectionEstablished = { startTimer() },
+            onConnectionClosed = { if (!isEndingCall) endCall() }
         )
         
         _eglContext.value = sessionManager?.eglContext
@@ -152,9 +164,9 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
 
     private fun updateProximitySensor() {
         if (_isCalling.value && (_isAudioOnly.value || !_isSpeakerOn.value)) {
-            proximityManager.activate()
+            proximitySensor.activate()
         } else {
-            proximityManager.deactivate()
+            proximitySensor.deactivate()
         }
     }
 
@@ -163,7 +175,7 @@ internal class CallViewModel(application: Application) : AndroidViewModel(applic
         isEndingCall = true
         
         stopTimer()
-        proximityManager.deactivate()
+        proximitySensor.deactivate()
         
         sessionManager?.stopMedia()
         signaling?.markDisconnected()

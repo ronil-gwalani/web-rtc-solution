@@ -9,10 +9,10 @@ import org.ron.webrtccall.di.libraryModule
 import org.ron.webrtccall.utils.AppVisibilityTracker
 import java.io.InputStream
 
-class SecretInputStream(private val resourceFile: Int) {
+class SecretInputStream(private  val context: Context,private val resourceFile: Int) {
 
 
-    fun Context.getImputeStream(): InputStream {
-        return resources.openRawResource(resourceFile)
+    fun getImputeStream(): InputStream {
+        return context.resources.openRawResource(resourceFile)
     }
 }

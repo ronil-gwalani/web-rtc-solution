@@ -5,7 +5,7 @@ build/
 
 # Service account credentials
 #*.json
-webrtc-call/src/main/res/raw/service_account.json
+app/src/main/res/raw/service_account.json
 
 # Firebase / Google Services
 #google-services.json

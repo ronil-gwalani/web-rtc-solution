@@ -8,23 +8,21 @@ import android.content.Context
 import com.google.auth.oauth2.GoogleCredentials
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.ron.webrtccall.R
 import org.ron.webrtccall.data.PreferenceProvider
 
+
 class FcmNotificationSender(
-    private val context: Context,
     private val preferenceProvider: PreferenceProvider,
     private val api: FcmApiService,
-     private val resourceFile: Int
+    private val inputStream: SecretInputStream
 ) : SignalingService {
 
     private suspend fun getAccessToken(): String? = withContext(Dispatchers.IO) {
         val savedToken = preferenceProvider.getOAuthToken()
         if (savedToken.isEmpty()) {
             try {
-                val inputStream = context.resources.openRawResource(resourceFile)
                 val googleCredentials = GoogleCredentials
-                    .fromStream(inputStream)
+                    .fromStream(inputStream.getImputeStream())
                     .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
                 googleCredentials.refresh()
                 val token = "Bearer ${googleCredentials.accessToken.tokenValue}"
@@ -76,10 +74,17 @@ class FcmNotificationSender(
                 )
                 val retryResponse = api.sendMessage(projectId, newAuthHeader, request)
                 if (retryResponse.isSuccessful) Result.success(Unit)
-                else Result.failure(Exception("FCM Error: ${retryResponse.errorBody()?.string()}"))
+                else Result.failure(
+                    Exception(
+                        "FCM Error: ${
+                            retryResponse.errorBody()?.string()
+                        }"
+                    )
+                )
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 }
+

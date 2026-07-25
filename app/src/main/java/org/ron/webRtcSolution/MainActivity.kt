@@ -19,8 +19,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
+import org.ron.webrtccall.R
 import org.ron.webrtccall.WebRtcCallHandler
 import org.ron.webrtccall.manager.CallManager
 import org.ron.webrtccall.data.PreferenceProvider
@@ -68,10 +72,9 @@ class MainActivity : ComponentActivity() {
                         viewModel.targetId = ""
                     }, onCallEnded = {
                         viewModel.targetId = ""
-                    }
-                    , onAnswer = {
-                            Log.d("onCreate", ":Call started  ")
-                        })
+                    }, onAnswer = {
+                        Log.d("onCreate", ":Call started  ")
+                    })
 
                 }
             }

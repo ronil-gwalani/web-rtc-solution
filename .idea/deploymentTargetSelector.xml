@@ -20,7 +20,7 @@
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/Users/ronilgwalani/.android/avd/Pixel_6_Pro.avd" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=CMTWLJ6LIBWG7LZD" />
               </handle>
             </Target>
           </targets>

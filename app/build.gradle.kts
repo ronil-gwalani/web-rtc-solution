@@ -84,14 +84,6 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.logging)
 
-    // Google Auth (for FCM v1)
-    implementation(libs.google.auth)
-
-    // Force gRPC version to avoid conflict with google-auth-library
-    implementation(libs.grpc.okhttp)
-    implementation(libs.grpc.stub)
-    implementation(libs.grpc.protobuf.lite)
-    implementation(libs.grpc.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

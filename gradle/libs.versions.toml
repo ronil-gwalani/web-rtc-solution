@@ -17,7 +17,7 @@ retrofit = "3.0.0"
 okhttp = "5.4.0"
 googleAuth = "1.49.0"
 grpc = "1.83.0"
-koin = "4.0.0"
+koin = "4.2.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

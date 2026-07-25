@@ -16,6 +16,10 @@ class RegistrationViewModel(private val userRepository: UserRepository) : ViewMo
     private val _registrationState = MutableStateFlow<RegistrationState>(RegistrationState.Idle)
     val registrationState: StateFlow<RegistrationState> = _registrationState
 
+    fun setStatus(state: RegistrationState) {
+        _registrationState.value = state
+    }
+
     fun register(userId: String, userName: String) {
         viewModelScope.launch {
             _registrationState.value = RegistrationState.Loading
@@ -24,7 +28,8 @@ class RegistrationViewModel(private val userRepository: UserRepository) : ViewMo
                     _registrationState.value = RegistrationState.Success
                 }
                 .onFailure { e ->
-                    _registrationState.value = RegistrationState.Error(e.message ?: "Registration failed")
+                    _registrationState.value =
+                        RegistrationState.Error(e.message ?: "Registration failed")
                 }
         }
     }

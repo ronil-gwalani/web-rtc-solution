@@ -4,6 +4,7 @@
  */
 package org.ron.webrtccall.manager
 
+import android.content.Intent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.ron.webrtccall.data.PreferenceProvider
@@ -22,6 +23,14 @@ class WebRtcCallManager(
 
     private val _currentCall = MutableStateFlow<CallState>(CallState.Idle)
     override val currentCall: StateFlow<CallState> = _currentCall.asStateFlow()
+    override suspend fun registerUser(
+        userId: String,
+        userName: String
+    ): Result<Unit> {
+        return userRepository.registerUser(userId, userName)
+    }
+
+    override val isRegistered: Flow<Boolean> = preferenceProvider.isRegistered
 
     private val _incomingCall = MutableSharedFlow<IncomingCall>(extraBufferCapacity = 1)
     override val incomingCall: SharedFlow<IncomingCall> = _incomingCall.asSharedFlow()
@@ -52,7 +61,11 @@ class WebRtcCallManager(
     override fun answerCall() {
         val current = _currentCall.value
         if (current is CallState.Incoming) {
-            _currentCall.value = CallState.Active(current.roomId, isCaller = false, isAudioOnly = current.isAudioOnly)
+            _currentCall.value = CallState.Active(
+                current.roomId,
+                isCaller = false,
+                isAudioOnly = current.isAudioOnly
+            )
         }
     }
 
@@ -61,12 +74,14 @@ class WebRtcCallManager(
     }
 
     override suspend fun startCall(targetUserId: String, isAudioOnly: Boolean): Result<String> {
-        val myId = preferenceProvider.userId.first() ?: return Result.failure(Exception("Not registered"))
+        val myId =
+            preferenceProvider.userId.first() ?: return Result.failure(Exception("Not registered"))
         val myName = preferenceProvider.userName.first() ?: "Unknown"
 
         return userRepository.getTargetUserToken(targetUserId).fold(
             onSuccess = { targetToken ->
-                val roomId = if (myId < targetUserId) "${myId}_$targetUserId" else "${targetUserId}_$myId"
+                val roomId =
+                    if (myId < targetUserId) "${myId}_$targetUserId" else "${targetUserId}_$myId"
                 signalingService.sendCallNotification(
                     targetToken = targetToken,
                     callerId = myId,
@@ -77,5 +92,24 @@ class WebRtcCallManager(
             },
             onFailure = { Result.failure(it) }
         )
+    }
+
+    override fun handleIntent(intent: Intent) {
+        val action = intent.getStringExtra("action")
+        if (intent.getBooleanExtra("isIncomingCall", false)) {
+            val rid = intent.getStringExtra("roomId") ?: ""
+            if (rid.isNotEmpty()) {
+                val isAudioOnly = intent.getBooleanExtra("isAudioOnly", false)
+                val callerName = intent.getStringExtra("callerName") ?: "Unknown"
+
+                if (action == "answer") {
+                    notifyIncomingCall(rid, callerName, isAudioOnly)
+                    answerCall()
+                } else {
+                    notifyIncomingCall(rid, callerName, isAudioOnly)
+                }
+            }
+        }
+
     }
 }

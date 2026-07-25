@@ -22,8 +22,11 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RegistrationScreen(onRegistrationSuccess: () -> Unit) {
-    val viewModel: RegistrationViewModel = koinViewModel()
+fun RegistrationScreen(
+     viewModel: RegistrationViewModel,
+    registerUser: (String, String) -> Unit,
+    onRegistrationSuccess: () -> Unit
+) {
     val state by viewModel.registrationState.collectAsState()
 
     var userId by remember { mutableStateOf("") }
@@ -53,27 +56,24 @@ fun RegistrationScreen(onRegistrationSuccess: () -> Unit) {
                 modifier = Modifier.size(100.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Text(
-                text = "Welcome to WebRTC",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface
+                text = "Welcome to WebRTC", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
+                ), color = MaterialTheme.colorScheme.onSurface
             )
-            
+
             Text(
                 text = "Register to start making high-quality calls",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(48.dp))
-            
+
             OutlinedTextField(
                 value = userId,
                 onValueChange = { userId = it },
@@ -84,9 +84,9 @@ fun RegistrationScreen(onRegistrationSuccess: () -> Unit) {
                 leadingIcon = { Icon(Icons.Default.Person, null) },
                 singleLine = true
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             OutlinedTextField(
                 value = userName,
                 onValueChange = { userName = it },
@@ -97,14 +97,18 @@ fun RegistrationScreen(onRegistrationSuccess: () -> Unit) {
                 leadingIcon = { Icon(Icons.Default.AccountCircle, null) },
                 singleLine = true
             )
-            
+
             Spacer(modifier = Modifier.height(48.dp))
 
             if (state is RegistrationViewModel.RegistrationState.Loading) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
                 Button(
-                    onClick = { if (userId.isNotEmpty() && userName.isNotEmpty()) viewModel.register(userId, userName) },
+                    onClick = {
+                        if (userId.isNotEmpty() && userName.isNotEmpty()) registerUser(
+                            userId, userName
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

@@ -8,8 +8,8 @@ build/
 webrtc-call/src/main/res/raw/service_account.json
 
 # Firebase / Google Services
-google-services.json
-**/google-services.json
+#google-services.json
+#**/google-services.json
 GoogleService-Info.plist
 **/GoogleService-Info.plist
 

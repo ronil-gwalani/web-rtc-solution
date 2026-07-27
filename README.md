@@ -164,7 +164,7 @@ dependencyResolutionManagement {
 ```kotlin
 dependencies {
 
-    implementation("com.github.ronil-gwalani:web-rtc-solution:v1.0.1")
+    implementation("com.github.ronil-gwalani:web-rtc-solution:v1.1.1")
 
 }
 ```
